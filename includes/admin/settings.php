@@ -25,7 +25,7 @@ class Settings {
 
 		return [
 			[
-				'id'    => 'auth',
+				'id'    => 'phorest_auth',
                 'title' => __( 'Authentication', 'wc-phorest' )
 			]
 		];
@@ -34,7 +34,7 @@ class Settings {
 	private function get_settings_fields(){
 
 		return [
-			'auth' => [
+			'phorest_auth' => [
 				[
 					'name'              => 'username',
                     'label'             => __( 'Username', 'wc-phorest' ),
