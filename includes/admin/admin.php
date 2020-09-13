@@ -2,12 +2,21 @@
 
 namespace Phorest\Admin;
 
+use Phorest\Admin\Settings;
+
 defined( 'ABSPATH' ) || exit;
 
 class Admin {
 
-	public function __construct() {
+	public function __construct(){
+
+		$this->init_hooks();
+	}
+
+	public function init_hooks(){
 		add_action( 'admin_menu', [ $this, 'admin_menu' ] );
+		add_action( 'admin_head', [ $this, 'remove_sub_phorest' ] );
+		add_action( 'admin_menu', [ $this, 'settings_menu' ] );
 	}
 
 	public function admin_menu(){
@@ -21,6 +30,20 @@ class Admin {
 			null,
 			60
 		);
+	}
+
+	public function remove_sub_phorest(){
+
+		global $submenu;
+
+		if( isset( $submenu['wc-phorest'] ) ){
+			unset( $submenu['wc-phorest'][0] );
+		}
+	}
+
+	public function settings_menu(){
+
+		$settings = new Settings();
 
 		add_submenu_page(
 			'wc-phorest',
@@ -28,11 +51,7 @@ class Admin {
 			__( 'Settings', 'wc-phorest' ),
 			'manage_woocommerce',
 			'wc-phorest-settings',
-			array( $this, 'settings_page' )
+			[ $settings, 'settings_page' ]
 		);
-	}
-
-	public function settings_page(){
-
 	}
 }

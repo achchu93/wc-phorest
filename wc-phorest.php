@@ -50,7 +50,7 @@ final class WC_Phorest {
 	}
 
 	private function register_autoloader(){
-		spl_autoload_register( [ $this, 'autoloader' ] );
+		require_once $this->get_plugin_path() . '/vendor/autoload.php';
 	}
 
 	public function autoloader( $class ){

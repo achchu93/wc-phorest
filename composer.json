@@ -1,0 +1,18 @@
+{
+    "name": "achchu/wc-phorest",
+    "type": "project",
+    "authors": [
+        {
+            "name": "achchu93",
+            "email": "achchu.zats@gmail.com"
+        }
+    ],
+    "require": {
+        "tareq1988/wordpress-settings-api-class": "dev-master"
+	},
+	"autoload": {
+		"psr-4": {
+			"Phorest\\" : "includes/"
+		}
+	}
+}
