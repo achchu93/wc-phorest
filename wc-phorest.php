@@ -13,51 +13,62 @@
  *
  */
 
-defined( 'ABSPATH' ) || exit;
+namespace Phorest;
 
+use Phorest\Admin\Admin;
+
+defined( 'ABSPATH' ) || exit;
 
 final class WC_Phorest {
 
 	public static $instance = null;
 
-	public function __construct() {
+	public function __construct(){
 
 		// check if woocommerce plugin is active
-		if( !in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
+		if( !in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ){
 			add_action('admin_notices', [ $this, 'wc_not_active_message' ] );
 			return false;
       	}
 
 		$this->define_constants();
-		$this->includes();
+		$this->register_autoloader();
 		$this->init();
 	}
 
-	public static function instance() {
+	public static function instance(){
 
-		if( is_null( self::$instance ) ) {
+		if( is_null( self::$instance ) ){
 			self::$instance = new self();
 		}
 
 		return self::$instance;
 	}
 
-	public function compatibility_check(){
-
-		throw new Error('error');
-
-	}
-
-	public function includes() {
-
-	}
-
 	public function define_constants(){
+		define( 'WCPH_PLUGIN_FILE', __FILE__ );
+	}
 
+	private function register_autoloader(){
+		spl_autoload_register( [ $this, 'autoloader' ] );
+	}
+
+	public function autoloader( $class ){
+
+		if ( 0 !== strpos( $class, __NAMESPACE__ . '\\' ) ) {
+			return;
+		}
+
+		$file = $this->get_plugin_path() . 'includes/' . preg_replace( '/^' . __NAMESPACE__ . '\\\/', '', $class ) . '.php';
+    	require_once $file;
+	}
+
+	public function get_plugin_path(){
+		return trailingslashit( dirname( WCPH_PLUGIN_FILE ) );
 	}
 
 	public function init(){
-
+		new Admin();
 	}
 
 	public function wc_not_active_message(){
@@ -69,5 +80,4 @@ final class WC_Phorest {
 	}
 
 }
-
 WC_Phorest::instance();
