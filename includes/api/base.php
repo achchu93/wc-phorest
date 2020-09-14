@@ -61,11 +61,11 @@ class Base {
 
 	protected function parse_request_data( $request_data ){
 
-		if( is_wp_error( $request_data ) || !array_key_exists( wp_remote_retrieve_response_code( $request_data ) ) ){
-			return $this->parse_error_request_data( $request );
+		if( is_wp_error( $request_data ) || !array_key_exists( wp_remote_retrieve_response_code( $request_data ), $this->success_messages ) ){
+			return $this->parse_error_request_data( $request_data );
 		}
 
-		return $this->parse_success_request_data( wp_remote_retrieve_body( $request ) );
+		return $this->parse_success_request_data( json_decode( wp_remote_retrieve_body( $request_data ), true ) );
 	}
 
 	protected function parse_error_request_data( $data ){
@@ -73,11 +73,13 @@ class Base {
 		$message = wp_remote_retrieve_response_message( $data );
 
 		if( !is_wp_error( $data ) ){
-			$data    = (array)$data['message'];
-			$message = !empty( $data['message'] ) ? $data['message'] :
-				isset( $this->error_messages[ wp_remote_retrieve_response_code( $data ) ] ) ?
-				$this->error_messages[ wp_remote_retrieve_response_code( $data ) ] :
-				$message;
+			$decoded = json_decode( wp_remote_retrieve_body( $data ), true );
+
+			if( !empty( $decoded['message'] ) ) {
+				$message = $decoded['message'];
+			}elseif( isset( $this->error_messages[ wp_remote_retrieve_response_code( $data ) ] ) ){
+				$message = $this->error_messages[ wp_remote_retrieve_response_code( $data ) ];
+			}
 		}
 
 		return [
@@ -90,7 +92,7 @@ class Base {
 	protected function parse_success_request_data( $data ){
 
 		return [
-			'success' => false,
+			'success' => true,
 			'message' => $data,
 			'code'    => wp_remote_retrieve_response_code( $data )
 		];
@@ -99,9 +101,8 @@ class Base {
 
 	public function get_branches(){
 
-		return $this->request(
-			"/{$this->settings['business_id']}/branch"
-		);
+		$response = $this->request( "/{$this->settings['business_id']}/branch" );
+		return isset( $response['message']['_embedded']['branches'] ) ? $response['message']['_embedded']['branches'] : $response['message'];
 	}
 
 }
