@@ -3,6 +3,7 @@
 namespace Phorest\Admin;
 
 use Phorest\Admin\Settings;
+use Phorest\Admin\ProductList;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -17,6 +18,7 @@ class Admin {
 		add_action( 'admin_menu', [ $this, 'admin_menu' ] );
 		add_action( 'admin_head', [ $this, 'remove_sub_phorest' ] );
 		add_action( 'admin_menu', [ $this, 'settings_menu' ] );
+		add_action( 'admin_menu', [ $this, 'import_menu' ] );
 	}
 
 	public function admin_menu(){
@@ -41,10 +43,31 @@ class Admin {
 		}
 	}
 
+	public function import_menu(){
+
+		$import = new Import();
+		$import_page = add_submenu_page(
+			'wc-phorest',
+			__( 'Import Products', 'wc-phorest' ),
+			__( 'Import', 'wc-phorest' ),
+			'manage_woocommerce',
+			'wc-phorest-import',
+			[ $import, 'import_page' ]
+		);
+
+		add_action( "load-{$import_page}", [ $this, 'import_page_init' ] );
+	}
+
+	public function import_page_init(){
+
+		global $ph_product_list;
+
+		$ph_product_list = new ProductList();
+	}
+
 	public function settings_menu(){
 
 		$settings = new Settings();
-
 		add_submenu_page(
 			'wc-phorest',
 			__( 'Phorest settings', 'wc-phorest' ),

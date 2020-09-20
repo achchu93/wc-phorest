@@ -19,7 +19,7 @@ class Base {
 	public function __construct() {
 
 		$this->url = 'http://api-gateway-eu.phorest.com/third-party-api-server/api/business';
-		$this->settings = get_option( 'phorest_auth', [] );
+		$this->settings = get_option( 'phorest_auth', [] ) + get_option( 'phorest_import', [] );
 		$this->username = !empty( $this->settings['username'] ) ? $this->settings['username'] : '';
 		$this->password = !empty( $this->settings['password'] ) ? $this->settings['password'] : '';
 
@@ -103,6 +103,12 @@ class Base {
 
 		$response = $this->request( "/{$this->settings['business_id']}/branch" );
 		return isset( $response['message']['_embedded']['branches'] ) ? $response['message']['_embedded']['branches'] : $response['message'];
+	}
+
+	public function get_products(){
+
+		$response = $this->request( "/{$this->settings['business_id']}/branch/{$this->settings['branch_id']}/product" );
+		return isset( $response['message']['_embedded']['products'] ) ? $response['message']['_embedded']['products'] : $response['message'];
 	}
 
 }

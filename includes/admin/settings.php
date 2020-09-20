@@ -11,6 +11,8 @@ class Settings {
 
 	public $settings_api;
 
+	private $api;
+
 	public function __construct(){
 
 		$this->init();
@@ -19,6 +21,7 @@ class Settings {
 
 	private function init(){
 
+		$this->api = new API();
 		$this->settings_api = new Settings_Api;
 		$this->settings_api->set_sections( $this->get_settings_sections() );
 		$this->settings_api->set_fields( $this->get_settings_fields() );
@@ -82,7 +85,8 @@ class Settings {
                     'label'             => __( 'Default Branch', 'wc-phorest' ),
                     'desc'              => __( 'Branch to import product from', 'wc-phorest' ),
                     'placeholder'       => __( 'Branch', 'wc-phorest' ),
-                    'type'              => 'text'
+					'type'              => 'select',
+					'options' 			=> $this->get_branches()
 				],
 				[
 					'name'              => 'wc_product_field',
@@ -134,11 +138,23 @@ class Settings {
 			return;
 		}
 
-		$api 	  = new API();
-		$branches = $api->get_branches();
+		$branches = $this->api->get_branches();
 
 		if( !is_array( $branches ) ) {
 			add_settings_error( 'phorest_auth', null, __( $branches, 'wc-phorest' ), 'error' );
 		}
+	}
+
+	public function get_branches(){
+
+		$options = [
+			'' => __( 'Select a branch', 'wc-phorest' )
+		];
+
+		foreach( $this->api->get_branches() as $branch ){
+			$options[$branch['branchId']] = $branch['name'];
+		}
+
+		return $options;
 	}
 }

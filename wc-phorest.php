@@ -68,6 +68,8 @@ final class WC_Phorest {
 	}
 
 	public function init(){
+		require_once "includes/functions.php";
+
 		new Admin();
 	}
 
