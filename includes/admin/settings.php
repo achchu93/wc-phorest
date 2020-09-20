@@ -32,17 +32,23 @@ class Settings {
 
 	private function get_settings_sections(){
 
-		return [
+		return apply_filters( 'wc_phorest_settings_sections', [
 			[
 				'id'    => 'phorest_auth',
-                'title' => __( 'Authentication', 'wc-phorest' )
+				'title' => __( 'Authentication', 'wc-phorest' ),
+				'desc'  => __( 'Authentication details of Phorest', 'wc-phorest' )
+			],
+			[
+				'id'    => 'phorest_import',
+				'title' => __( 'Import', 'wc-phorest' ),
+				'desc'  => __( 'Phorest product import settings', 'wc-phorest' )
 			]
-		];
+		]);
 	}
 
 	private function get_settings_fields(){
 
-		return [
+		return apply_filters( 'wc_phorest_settings_fields', [
 			'phorest_auth' => [
 				[
 					'name'              => 'username',
@@ -69,8 +75,45 @@ class Settings {
                     'placeholder'       => __( 'Business ID', 'wc-phorest' ),
                     'type'              => 'text'
 				]
+			],
+			'phorest_import' => [
+				[
+					'name'              => 'branch_id',
+                    'label'             => __( 'Default Branch', 'wc-phorest' ),
+                    'desc'              => __( 'Branch to import product from', 'wc-phorest' ),
+                    'placeholder'       => __( 'Branch', 'wc-phorest' ),
+                    'type'              => 'text'
+				],
+				[
+					'name'              => 'wc_product_field',
+                    'label'             => __( 'WC Product Field', 'wc-phorest' ),
+                    'desc'              => __( 'Field to map with phorest product. Default to sku', 'wc-phorest' ),
+                    'placeholder'       => __( 'Eg: sku', 'wc-phorest' ),
+                    'type'              => 'text'
+				],
+				[
+					'name'              => 'ph_product_field',
+                    'label'             => __( 'Phorest Product Field', 'wc-phorest' ),
+                    'desc'              => __( 'Field to map with woocommerce product. Default to barcode', 'wc-phorest' ),
+                    'placeholder'       => __( 'Eg: barcode', 'wc-phorest' ),
+                    'type'              => 'text'
+				],
+				[
+					'name'              => 'import_outofstock',
+                    'label'             => __( 'Out of stock products', 'wc-phorest' ),
+                    'desc'              => __( 'Import out of stock product', 'wc-phorest' ),
+					'type'              => 'checkbox',
+					'default' 			=> 'off'
+				],
+				[
+					'name'              => 'replace_existing',
+                    'label'             => __( 'Existing products', 'wc-phorest' ),
+                    'desc'              => __( 'Replace existing products', 'wc-phorest' ),
+					'type'              => 'checkbox',
+					'default' 			=> 'off'
+				]
 			]
-		];
+		]);
 	}
 
 	public function settings_page(){
