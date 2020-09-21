@@ -15,6 +15,7 @@ class Import {
 		$ph_product_list->prepare_items();
 
 		echo '<form id="import-phorest-products" method="get">';
+		echo '<input type="hidden" name="page" value="'.$_GET['page'].'" />';
 		$ph_product_list->views();
 		$ph_product_list->display();
 		echo '</form>';
