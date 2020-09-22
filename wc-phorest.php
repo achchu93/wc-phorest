@@ -15,6 +15,7 @@
 
 namespace Phorest;
 
+use Phorest\Ajax;
 use Phorest\Admin\Admin;
 
 defined( 'ABSPATH' ) || exit;
@@ -59,18 +60,28 @@ final class WC_Phorest {
 			return;
 		}
 
-		$file = $this->get_plugin_path() . 'includes/' . preg_replace( '/^' . __NAMESPACE__ . '\\\/', '', $class ) . '.php';
+		$file = $this->get_plugin_path() . '/includes/' . preg_replace( '/^' . __NAMESPACE__ . '\\\/', '', $class ) . '.php';
     	require_once $file;
 	}
 
 	public function get_plugin_path(){
-		return trailingslashit( dirname( WCPH_PLUGIN_FILE ) );
+		return untrailingslashit( plugin_dir_path( WCPH_PLUGIN_FILE ) );
+	}
+
+	public function get_plugin_url(){
+		return untrailingslashit( plugin_dir_url( WCPH_PLUGIN_FILE ) );
 	}
 
 	public function init(){
 		require_once "includes/functions.php";
 
-		new Admin();
+		if( defined( 'DOING_AJAX' ) ){
+			new Ajax();
+		}
+
+		if( is_admin() ){
+			new Admin();
+		}
 	}
 
 	public function wc_not_active_message(){
@@ -82,4 +93,5 @@ final class WC_Phorest {
 	}
 
 }
-WC_Phorest::instance();
+
+$GLOBALS['wcph'] = WC_Phorest::instance();

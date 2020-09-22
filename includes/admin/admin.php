@@ -19,6 +19,7 @@ class Admin {
 		add_action( 'admin_head', [ $this, 'remove_sub_phorest' ] );
 		add_action( 'admin_menu', [ $this, 'settings_menu' ] );
 		add_action( 'admin_menu', [ $this, 'import_menu' ] );
+		add_action( 'admin_enqueue_scripts', [ $this, 'admin_assets' ] );
 	}
 
 	public function admin_menu(){
@@ -76,5 +77,14 @@ class Admin {
 			'wc-phorest-settings',
 			[ $settings, 'settings_page' ]
 		);
+	}
+
+	public function admin_assets(){
+		global $wcph;
+
+		wp_enqueue_style( 'wcph-admin-style', $wcph->get_plugin_url() . '/assets/css/admin.css' );
+		wp_enqueue_script( 'wcph-admin-script', $wcph->get_plugin_url() . '/assets/js/admin.js', [ 'jquery-blockui' ] );
+
+		wp_localize_script( 'wcph-admin-script', 'wcph_admin_args', [ 'nonce' => wp_create_nonce( 'wcph-admin-action' ) ] );
 	}
 }
