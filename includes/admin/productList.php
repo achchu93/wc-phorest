@@ -227,6 +227,10 @@ class ProductList extends \WP_List_Table {
 		foreach( $product_data['products'] as $product ){
 			if( in_array( $product['productId'], $_REQUEST['products'] ) ){
 
+				if( wc_get_product_id_by_sku( $product['barcode'] ) ){
+					continue;
+				}
+
 				$wc_product = new \WC_Product();
 				$wc_product->set_props([
 					'name' 			 => $product['name'],

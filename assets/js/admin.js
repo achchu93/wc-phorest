@@ -5,7 +5,11 @@
 		$('.single-import').on('click', function(e){
 			e.preventDefault();
 
-			var row = $(this).parents('tr').data('row');
+			var form  = $('#import-phorest-products'),
+				rowEl = $(this).parents('tr')
+				row   = rowEl.data('row');
+
+			form.block({message: null});
 
 			$.ajax({
 				url : ajaxurl,
@@ -17,7 +21,11 @@
 					branch_id: $('#ph_branch_selection_top').val()
 				},
 				success: function(response){
-					console.log(response);
+					console.log($(response.data.product));
+					rowEl.replaceWith( $(response.data.product) );
+				},
+				complete: function(){
+					form.unblock();
 				}
 			});
 		});

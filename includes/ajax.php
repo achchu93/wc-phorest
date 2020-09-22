@@ -58,7 +58,23 @@ class Ajax {
 
 		$new_product = $wc_product->save();
 
-		wp_send_json_success( [ 'product' => $new_product ] );
+		if( $new_product ){
+
+			$new_product = wc_get_product( $new_product );
+
+			$tr  = '<tr data-row="'._wp_specialchars( wp_json_encode( $product ), ENT_QUOTES, 'UTF-8', true ).'">';
+			$tr .= '<th scope="row" class="check-column"><input type="checkbox" checked="" disabled=""></th>';
+			$tr .= '<td class="name column-name has-row-actions column-primary" data-colname="'.__( 'Product Name', 'wc-phorest' ).'">'.$product['name'].'<button type="button" class="toggle-row"><span class="screen-reader-text">Show more details</span></button></td>';
+			$tr .= '<td class="barcode column-barcode" data-colname="'.__( 'Barcode', 'wc-phorest' ).'">'.$product['barcode'].'</td>';
+			$tr .= '<td class="price column-price" data-colname="'.__( 'Price', 'wc-phorest' ).'">'.wc_price($product['price']).'</td>';
+			$tr .= '<td class="stock column-stock" data-colname="'.__( 'Stock', 'wc-phorest' ).'">'.$product['quantityInStock'].'</td>';
+			$tr .= '<td class="in_store column-in_store" data-colname="'.__( 'In store', 'wc-phorest' ).'"><a href="'.get_edit_post_link($new_product->get_id()).'" target="_blank"><strong>'.$new_product->get_name().'</strong></a><strong>Stock:</strong> '.$new_product->get_stock_quantity().'</td>';
+			$tr .= '<td class="actions column-actions" data-colname="'.__( 'Actions', 'wc-phorest' ).'"><button type="button" class="single-sync button"><i class="dashicons dashicons-update-alt"></i></button></td>';
+
+			wp_send_json_success( [ 'product' => $tr ] );
+		}
+
+		wp_send_json_error( [ 'message' => __( 'An error occurred', 'wc-phorest' ) ] );
 	}
 
 }

@@ -4,3 +4,11 @@
     vertical-align: middle;
     line-height: 1;
 }
+
+.phorest_page_wc-phorest-import .column-in_store>a {
+    display: block;
+}
+
+.phorest_page_wc-phorest-import .check-column input[type="checkbox"]:disabled {
+    cursor: not-allowed;
+}
