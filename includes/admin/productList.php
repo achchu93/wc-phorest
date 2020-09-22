@@ -69,12 +69,6 @@ class ProductList extends \WP_List_Table {
 	}
 
 	public function column_cb( $data ) {
-
-		$product_id = wc_get_product_id_by_sku( $data['barcode'] );
-		if( !empty( $data['barcode'] ) && $product_id ){
-			return '<input type="checkbox" checked disabled />';
-		}
-
 		return sprintf( '<input type="checkbox" name="products[]" value="%1$s" />', $data['ID'] );
 	}
 
@@ -115,9 +109,9 @@ class ProductList extends \WP_List_Table {
 
 		if( !$product ){
 			$actions .= '<button type="button" class="single-import button"><i class="dashicons dashicons-arrow-down-alt"></i></button>';
+		}else{
+			$actions .= '<button type="button" class="single-sync button"><i class="dashicons dashicons-update-alt"></i></button>';
 		}
-
-		$actions .= '<button type="button" class="single-sync button"><i class="dashicons dashicons-update-alt"></i></button>';
 
 		return $actions;
 	}
@@ -128,7 +122,8 @@ class ProductList extends \WP_List_Table {
 
 	public function get_bulk_actions(){
 		return [
-			'import_product' => __( 'Import Products', 'wc-phorest' )
+			'import_product' => __( 'Import Products', 'wc-phorest' ),
+			'update_stock' 	 => __( 'Update Stock', 'wc-phorest' ),
 		];
 	}
 
@@ -219,6 +214,15 @@ class ProductList extends \WP_List_Table {
 			return;
 		}
 
+		if( !is_callable( [ $this, $action ] ) ){
+			return;
+		}
+
+		$this->{$action}();
+	}
+
+	private function import_product(){
+
 		$product_data = $this->get_products();
 		if( !isset( $product_data['products'] ) ){
 			return;
@@ -246,6 +250,35 @@ class ProductList extends \WP_List_Table {
 				}
 
 				$new_product = $wc_product->save();
+			}
+		}
+
+		wp_redirect( remove_query_arg(
+			array( '_wp_http_referer', '_wpnonce', 'products', 'action', 'action2' ),
+			wp_unslash( $_SERVER['REQUEST_URI'] )
+		));
+		exit;
+	}
+
+	private function update_stock(){
+
+		$product_data = $this->get_products();
+		if( !isset( $product_data['products'] ) ){
+			return;
+		}
+
+		foreach( $product_data['products'] as $product ){
+			if( in_array( $product['productId'], $_REQUEST['products'] ) ){
+
+				$product_id = wc_get_product_id_by_sku( $product['barcode'] );
+
+				if( !$product_id ){
+					continue;
+				}
+
+				$wc_product = wc_get_product( $product_id );
+				$wc_product->set_stock_quantity( $product['quantityInStock'] );
+				$wc_product->save();
 			}
 		}
 
