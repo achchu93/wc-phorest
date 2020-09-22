@@ -105,13 +105,13 @@ class Base {
 		return isset( $response['message']['_embedded']['branches'] ) ? $response['message']['_embedded']['branches'] : $response['message'];
 	}
 
-	public function get_products( $branch_id = '', $page = 0 ){
+	public function get_products( $branch_id = '', $args = [] ){
 
 		if( empty( $branch_id ) ){
 			$branch_id = $this->settings['branch_id'];
 		}
 
-		$response = $this->request( "/{$this->settings['business_id']}/branch/{$branch_id}/product", "GET", [ "page" => $page ] );
+		$response = $this->request( "/{$this->settings['business_id']}/branch/{$branch_id}/product", "GET", $args );
 
 		$data               = [];
 		$data['products']   = isset( $response['message']['_embedded']['products'] ) ? $response['message']['_embedded']['products'] : [];

@@ -46,10 +46,11 @@ class ProductList extends \WP_List_Table {
 			return;
 		}
 
-		$page = !empty( $_GET['paged'] ) ? intval( $_GET['paged'] ) - 1 : 0;
+		$page   = !empty( $_GET['paged'] ) ? intval( $_GET['paged'] ) - 1 : 0;
+		$search = !empty( $_GET['s'] ) ? $_GET['s'] : '';
 
 		$api      = new Api();
-		$data     = $api->get_products( $branch, $page );
+		$data     = $api->get_products( $branch, [ "page" => $page, "searchQuery" => $search ] );
 		$products = $data['products'];
 		foreach( $products as $product ){
 			$this->items[] = [
