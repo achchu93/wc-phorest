@@ -67,7 +67,12 @@ class CronJobs {
 		if( isset( $job['jobId'] ) ){
 			$csv_data = $api->get_csv_export_job( $job['jobId'] );
 
-			$reader   = Reader::createFromString( file_get_contents( $csv_data['tempCsvExternalUrl'] ) );
+			$reader   = Reader::createFromString( @file_get_contents( $csv_data['tempCsvExternalUrl'] ) );
+
+			if( $reader->count() === 0 ){
+				return;
+			}
+
 			$reader->setHeaderOffset(0);
 
 			$stmt    = (new Statement())
