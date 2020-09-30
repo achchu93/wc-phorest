@@ -25,7 +25,7 @@ class CronJobs {
 	public function schedules( $schedules ){
 
 		$schedules['twicehourly'] = [
-			'interval' => 5,
+			'interval' => 1800,
         	'display'  => __( 'Every Half an hour', 'wc-phorest' )
 		];
 
@@ -35,8 +35,8 @@ class CronJobs {
 	public function register_cron_jobs(){
 
 		foreach( $this->jobs as $job ){
-			$this->{'schedule_'.$job}( $job );
-			add_action( $job, [ $this, "run_$job" ] );
+			$this->{'schedule_'.$job}( "wcph_$job" );
+			add_action( "wcph_$job", [ $this, "run_$job" ] );
 		}
 	}
 
@@ -58,7 +58,7 @@ class CronJobs {
 		$settings = get_option( 'phorest_import', [] );
 
 		if( empty( $settings['branch_id'] ) ){
-			$this->unschedule_job( 'product_import' );
+			$this->unschedule_job( 'wcph_product_import' );
 			return;
 		}
 
@@ -99,7 +99,7 @@ class CronJobs {
 	public function unregister_cron_jobs(){
 
 		foreach( $this->jobs as $job ){
-			$this->unschedule_job( $job );
+			$this->unschedule_job( "wcph_$job" );
 		}
 	}
 
