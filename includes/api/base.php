@@ -52,7 +52,7 @@ class Base {
 					'content-type'  => 'application/json',
 					'authorization' => 'Basic ' . base64_encode( $this->username . ':' . $this->password )
 				],
-				'body'    => $data
+				'body'    => $method === 'GET' ? $data : json_encode( $data )
 			]
 		);
 
@@ -118,6 +118,30 @@ class Base {
 		$data['page']       = isset( $response['message']['page'] ) ? $response['message']['page'] : [];
 
 		return $data;
+	}
+
+	public function create_csv_export_job( $start_date = '' ){
+
+		$start_date = $start_date ? $start_date : date( 'Y-m-d' );
+
+		$response = $this->request(
+			"/{$this->settings['business_id']}/branch/{$this->settings['branch_id']}/csvexportjob",
+			"POST",
+			[
+				'jobType' 		=> 'TRANSACTIONS_CSV',
+				'finishFilter' 	=> date( 'Y-m-d' ),
+				'startFilter' 	=> $start_date
+			]
+		);
+
+		return $response['message'];
+	}
+
+	public function get_csv_export_job( $job_id ){
+
+		$response = $this->request( "/{$this->settings['business_id']}/branch/{$this->settings['branch_id']}/csvexportjob/{$job_id}" );
+
+		return $response['message'];
 	}
 
 }

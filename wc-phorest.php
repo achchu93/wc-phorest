@@ -17,6 +17,7 @@ namespace Phorest;
 
 use Phorest\Ajax;
 use Phorest\Admin\Admin;
+use Phorest\CronJobs;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -82,6 +83,8 @@ final class WC_Phorest {
 		if( is_admin() ){
 			new Admin();
 		}
+
+		new CronJobs();
 	}
 
 	public function wc_not_active_message(){

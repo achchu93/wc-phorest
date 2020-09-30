@@ -8,7 +8,8 @@
         }
     ],
     "require": {
-        "tareq1988/wordpress-settings-api-class": "dev-master"
+        "tareq1988/wordpress-settings-api-class": "dev-master",
+        "league/csv": "^9.5"
 	},
 	"autoload": {
 		"psr-4": {
