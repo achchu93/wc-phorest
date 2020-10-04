@@ -19,14 +19,14 @@ class CronJobs {
 		add_action( 'init', [ $this, 'register_cron_jobs' ] );
 
 		// remove all the jobs on plugin deactivation
-		register_deactivation_hook( 'WCPH_PLUGIN_FILE', [ $this, 'unregister_cron_jobs' ] );
+		add_action( 'deactivate_'.plugin_basename( WCPH_PLUGIN_FILE ), [ $this, 'unregister_cron_jobs' ] );
 	}
 
 	public function schedules( $schedules ){
 
-		$schedules['twicehourly'] = [
-			'interval' => 1800,
-        	'display'  => __( 'Every Half an hour', 'wc-phorest' )
+		$schedules['twelvetimeshourly'] = [
+			'interval' => MINUTE_IN_SECONDS * 5,
+        	'display'  => __( 'Every 5 Mins', 'wc-phorest' )
 		];
 
 		return $schedules;
@@ -77,23 +77,20 @@ class CronJobs {
 
 			$stmt    = (new Statement())
 						->where( function( $record ){ return $record['item_type'] === 'PRODUCT'; } );
-			$records = $stmt->process($reader);
+			$records = $stmt->process( $reader );
 
-			$last_product_update = get_option( '_ph_last_product_update', '' );
+			$last_product_update = get_option( '_ph_last_stock_update', '' );
 
 			foreach( $records as $offset => $row ){
-				$t_time  = strtotime( "{$row['purchased_date']} {$row['purchase_time']}" );
-				$product = wc_get_product_id_by_sku( $row['product_barcode'] );
+				$t_time      = strtotime( "{$row['purchased_date']} {$row['purchase_time']}" );
+				$product     = wc_get_product_id_by_sku( $row['product_barcode'] );
+				$last_update = !empty( $last_product_update ) && intval( $last_product_update ) ? intval( $last_product_update ) : false;
 
-				if( !$product || ( !empty( $last_product_update ) && strtotime( $last_product_update ) <= $t_time ) ){
+				if( !$product || ( $last_update && $last_update > $t_time ) ){
 					continue;
 				}
 
 				$new_qty = wc_update_product_stock( $product, intval( $row['quantity'] ), 'decrease' );
-
-				if( $new_qty ){
-					update_option( '_ph_last_product_update', $t_time );
-				}
 			}
 
 			update_option( '_ph_last_stock_update', strtotime("now") );
@@ -102,7 +99,6 @@ class CronJobs {
 	}
 
 	public function unregister_cron_jobs(){
-
 		foreach( $this->jobs as $job ){
 			$this->unschedule_job( "wcph_$job" );
 		}

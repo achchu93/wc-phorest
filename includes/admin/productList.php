@@ -165,8 +165,18 @@ class ProductList extends \WP_List_Table {
 			<div class="alignleft actions bulkactions">
 				<?php $this->bulk_actions( $which ); ?>
 			</div>
-				<?php
+			<?php
 			endif;
+
+			$last_updated = get_option( '_ph_last_stock_update', '' );
+			if( !empty( $last_updated ) ){
+				echo sprintf(
+					'<span class="ph-last-update"><strong>%1$s : %2$s</strong></span>',
+					__( 'Products last updated at', 'wc-phorest' ),
+					date( 'Y-m-d h:i:s A', intval( $last_updated ) )
+				);
+			}
+
 			$this->extra_tablenav( $which );
 			$this->pagination( $which );
 			?>
