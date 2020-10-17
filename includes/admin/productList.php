@@ -255,7 +255,7 @@ class ProductList extends \WP_List_Table {
 					'sku' 			 => $product['barcode']
 				]);
 
-				foreach( [ 'code', 'barcode' ] as $meta ){
+				foreach( [ 'code', 'barcode', 'productId' ] as $meta ){
 					$wc_product->add_meta_data( "wcph_{$meta}", $product[$meta] );
 				}
 

@@ -49,7 +49,7 @@ class CronJobs {
 		}
 
 		if ( ! wp_next_scheduled( $job ) ) {
-			wp_schedule_event( time(), 'twicehourly', $job );
+			wp_schedule_event( time(), 'twelvetimeshourly', $job );
 		}
 	}
 
@@ -93,7 +93,7 @@ class CronJobs {
 				$new_qty = wc_update_product_stock( $product, intval( $row['quantity'] ), 'decrease' );
 			}
 
-			update_option( '_ph_last_stock_update', strtotime("now") );
+			update_option( '_ph_last_stock_update', current_time( 'timestamp' ) ); // save time of the current timezone
 		}
 
 	}
