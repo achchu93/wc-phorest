@@ -85,8 +85,9 @@ class CronJobs {
 				$t_time      = strtotime( "{$row['purchased_date']} {$row['purchase_time']}" );
 				$product     = wc_get_product_id_by_sku( $row['product_barcode'] );
 				$last_update = !empty( $last_product_update ) && intval( $last_product_update ) ? intval( $last_product_update ) : false;
+				$is_wc_order = wc_phorest_order_by_number( $row['transaction_id'] ); // check whether order is from woocommerce
 
-				if( !$product || ( $last_update && $last_update > $t_time ) ){
+				if( !$product || ( $last_update && $last_update > $t_time ) || $is_wc_order ){
 					continue;
 				}
 

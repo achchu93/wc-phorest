@@ -15,6 +15,7 @@
 
 namespace Phorest;
 
+use Phorest\Frontend;
 use Phorest\Ajax;
 use Phorest\Admin\Admin;
 use Phorest\CronJobs;
@@ -85,6 +86,7 @@ final class WC_Phorest {
 		}
 
 		new CronJobs();
+		new Frontend();
 	}
 
 	public function wc_not_active_message(){

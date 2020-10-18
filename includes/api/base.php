@@ -144,4 +144,15 @@ class Base {
 		return $response['message'];
 	}
 
+	public function create_purchase( $branch_id = '', $purchase_data = [] ){
+
+		if( empty( $branch_id ) ){
+			$branch_id = $this->settings['branch_id'];
+		}
+
+		$response = $this->request( "/{$this->settings['business_id']}/branch/{$this->settings['branch_id']}/purchase", 'POST', $purchase_data );
+
+		return $response['message'];
+	}
+
 }
